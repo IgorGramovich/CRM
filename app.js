@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan'); // логирование запросов
@@ -9,7 +10,12 @@ const analyticsRoutes = require('./routes/analytics');
 const categoryRoutes = require('./routes/category');
 const orderRoutes = require('./routes/order');
 const positionsRoutes = require('./routes/positions');
+const keys = require('./config/keys');
 const app = express();
+
+mongoose.connect(keys.mongoURI)
+    .then(() => console.log('MongoDB connected'))
+    .catch(error => console.log(error));
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 

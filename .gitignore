@@ -3,3 +3,5 @@ node_modules
 .idea/
 dist/*
 access.log
+config/keys.dev.js
+client/etc
