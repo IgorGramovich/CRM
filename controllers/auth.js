@@ -23,7 +23,7 @@ module.exports.register = async function (req, res) {
     }
     
     // create user
-    const salt = bcrypt.genSaltSync(10);
+    const salt = await bcrypt.genSalt(10);
     const password = req.body.password
     const user = new User({
         email: req.body.email,
