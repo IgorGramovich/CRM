@@ -1,19 +1,39 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const keys = require('../config/keys');
 const HTTP_STATUS = require('../consts/httpStatus');
+const cfg = require('../config/cfg');
 
-module.exports.login = function (req, res) {
-    res.status(200).json({
-        login: {
-            email: req.body.email,
-            password: req.body.password,
-        }
+module.exports.login = async function (req, res) {
+    const candidate = await User.findOne({email: req.body.email});
+    if (!candidate) {
+        // User not found, error
+        res.status(HTTP_STATUS.notFound)
+        .json({message: 'Пользователь с таким email не найден'});
+        return;
+    }
+    // check password, user exist
+    const passwordResult = await bcrypt.compare(req.body.password, candidate.password);
+    if (!passwordResult) {
+        // password not matches, error
+        res.status(HTTP_STATUS.unauthorizen)
+        .json({message: 'Пароли не совпадают. Попробуйте снова.'})
+    }
+    // Generate token, password matches
+    const token = jwt.sign({
+        email: candidate.email,
+        userId: candidate._id,
+    }, keys.jwt, {expiresIn: cfg.tokenTimeToLife});
+    res.status(HTTP_STATUS.ok)
+    .json({
+        token: `Bearer ${token}`
     });
 }
 
 module.exports.register = async function (req, res) {
-    const condidate = await User.findOne({email: req.body.email});
-    if (condidate) {
+    const candidate = await User.findOne({email: req.body.email});
+    if (candidate) {
         // User Exists! Return the conflict status and message.
         res.status(HTTP_STATUS.conflict)
             .json({
