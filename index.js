@@ -1,4 +1,4 @@
 const app = require('./app');
-const port = process.env.PORT || 5000;
+const cfg = require('./config/cfg');
 
-app.listen(port, () => console.log(`Server has been started on ${port}`));
+app.listen(cfg.port, () => console.log(`Server has been started on ${cfg.port}`));
