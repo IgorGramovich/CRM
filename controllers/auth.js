@@ -4,6 +4,7 @@ const User = require('../models/User');
 const keys = require('../config/keys');
 const HTTP_STATUS = require('../consts/httpStatus');
 const cfg = require('../config/cfg');
+const errorHandler = require('../utils/errorHandler');
 
 module.exports.login = async function (req, res) {
     const candidate = await User.findOne({email: req.body.email});
@@ -55,6 +56,6 @@ module.exports.register = async function (req, res) {
         res.status(HTTP_STATUS.created)
             .json(user)
     } catch (e) {
-        // TODO handle error
+        errorHandler(e, res);
     }
 }
